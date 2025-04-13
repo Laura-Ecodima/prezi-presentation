@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,26 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Prezi Visual Editor</title>
   <style>
-    body, html {{
+    body, html {
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
       overflow: hidden;
-    }}
-    #toolbar {{
+    }
+    #toolbar {
       padding: 10px;
       background: #f8f9fa;
       border-bottom: 1px solid #ccc;
-    }}
-    #canvas {{
+    }
+    #canvas {
       width: 100vw;
       height: calc(100vh - 50px);
       position: relative;
       overflow: hidden;
       background: #eef2f5;
       cursor: grab;
-    }}
-    .slide {{
+    }
+    .slide {
       position: absolute;
       width: 200px;
       height: 150px;
@@ -35,19 +34,19 @@
       border-radius: 10px;
       box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
       cursor: move;
-    }}
-    .slide input, .slide textarea {{
+    }
+    .slide input, .slide textarea {
       width: 100%;
       margin-top: 5px;
       font-size: 12px;
-    }}
-    .slide-links {{
+    }
+    .slide-links {
       margin-top: 5px;
-    }}
-    .slide-links input {{
+    }
+    .slide-links input {
       width: calc(100% - 25px);
-    }}
-    .btn {{
+    }
+    .btn {
       padding: 5px 10px;
       margin-right: 10px;
       background: #007bff;
@@ -55,10 +54,10 @@
       border: none;
       cursor: pointer;
       border-radius: 3px;
-    }}
-    .btn.danger {{
+    }
+    .btn.danger {
       background: #dc3545;
-    }}
+    }
   </style>
 </head>
 <body>
@@ -74,24 +73,23 @@
     let slides = [];
     let dragging = null;
     let offsetX, offsetY;
-
     const canvas = document.getElementById("canvas");
 
-    function renderSlides() {{
+    function renderSlides() {
       canvas.innerHTML = '';
-      slides.forEach(slide => {{
+      slides.forEach(slide => {
         const div = document.createElement("div");
         div.className = "slide";
         div.style.left = slide.position.x + "px";
         div.style.top = slide.position.y + "px";
         div.setAttribute("data-id", slide.id);
-        
-        div.onmousedown = (e) => {{
+
+        div.onmousedown = (e) => {
           dragging = div;
           offsetX = e.offsetX;
           offsetY = e.offsetY;
           canvas.style.cursor = "grabbing";
-        }};
+        };
 
         const titleInput = document.createElement("input");
         titleInput.value = slide.title;
@@ -115,18 +113,18 @@
         delBtn.textContent = "Delete";
         delBtn.className = "btn danger";
         delBtn.style.marginTop = "5px";
-        delBtn.onclick = () => {{
+        delBtn.onclick = () => {
           slides = slides.filter(s => s.id !== slide.id);
           renderSlides();
-        }};
+        };
         div.appendChild(delBtn);
 
         canvas.appendChild(div);
-      }});
-    }}
+      });
+    }
 
-    canvas.onmousemove = (e) => {{
-      if (dragging) {{
+    canvas.onmousemove = (e) => {
+      if (dragging) {
         const id = dragging.getAttribute("data-id");
         const slide = slides.find(s => s.id === id);
         const newX = e.clientX - offsetX;
@@ -135,48 +133,46 @@
         dragging.style.top = newY + "px";
         slide.position.x = newX;
         slide.position.y = newY;
-      }}
-    }};
+      }
+    };
 
-    canvas.onmouseup = () => {{
+    canvas.onmouseup = () => {
       dragging = null;
       canvas.style.cursor = "grab";
-    }};
+    };
 
-    function addSlide() {{
+    function addSlide() {
       const newId = "slide" + (slides.length + 1);
-      slides.push({{
+      slides.push({
         id: newId,
         title: "New Slide",
         content: "",
-        position: {{ x: 100, y: 100 }},
+        position: { x: 100, y: 100 },
         links_to: []
-      }});
+      });
       renderSlides();
-    }}
+    }
 
-    function saveSlides() {{
-      const json = JSON.stringify({{ home_slide: slides[0]?.id || "", slides }}, null, 2);
-      const blob = new Blob([json], {{ type: "application/json" }});
+    function saveSlides() {
+      const json = JSON.stringify({ home_slide: slides[0]?.id || "", slides }, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
       const link = document.getElementById("downloadLink");
       link.href = URL.createObjectURL(blob);
-      link.download = "edited_presentation.json";
+      link.download = "prezi_presentation_prototype.json";
       link.click();
-    }}
+    }
 
-    document.getElementById("fileInput").addEventListener("change", (e) => {{
+    document.getElementById("fileInput").addEventListener("change", (e) => {
       const file = e.target.files[0];
       const reader = new FileReader();
-      reader.onload = (event) => {{
+      reader.onload = (event) => {
         const data = JSON.parse(event.target.result);
         slides = data.slides || [];
         renderSlides();
-      }};
+      };
       reader.readAsText(file);
-    }});
+    });
 
-    // Load initial empty slides
-    slides = [];
     renderSlides();
   </script>
 </body>
