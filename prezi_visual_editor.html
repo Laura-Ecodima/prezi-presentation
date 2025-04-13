@@ -73,6 +73,7 @@
     let slides = [];
     let dragging = null;
     let offsetX, offsetY;
+
     const canvas = document.getElementById("canvas");
 
     function renderSlides() {
@@ -105,7 +106,7 @@
         const linksInput = document.createElement("input");
         linksInput.value = slide.links_to.join(",");
         linksInput.placeholder = "Links to slide ids (comma separated)";
-        linksInput.oninput = (e) => slide.links_to = e.target.value.split(",").map(s => s.trim());
+        linksInput.oninput = (e) => slide.links_to = e.target.value.split(",").map(s => s.trim()).filter(s => s);
         linksInput.className = "slide-links";
         div.appendChild(linksInput);
 
@@ -158,7 +159,7 @@
       const blob = new Blob([json], { type: "application/json" });
       const link = document.getElementById("downloadLink");
       link.href = URL.createObjectURL(blob);
-      link.download = "prezi_presentation_prototype.json";
+      link.download = "presentation.json";
       link.click();
     }
 
@@ -173,6 +174,7 @@
       reader.readAsText(file);
     });
 
+    slides = [];
     renderSlides();
   </script>
 </body>
