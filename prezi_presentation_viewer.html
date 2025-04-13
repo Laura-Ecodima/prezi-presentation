@@ -1,118 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prezi Viewer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prezi Visual Editor</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
+      font-family: Arial, sans-serif;
       overflow: hidden;
-      font-family: sans-serif;
     }
-    #viewer {
-      position: relative;
+    #toolbar {
+      padding: 10px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #ccc;
+    }
+    #canvas {
       width: 100vw;
-      height: 100vh;
-      background-color: #f0f0f0;
+      height: calc(100vh - 50px);
+      position: relative;
+      overflow: hidden;
+      background: #eef2f5;
+      cursor: grab;
     }
     .slide {
       position: absolute;
-      width: 300px;
-      height: 200px;
+      width: 200px;
+      height: 150px;
       padding: 10px;
       background: white;
       border: 2px solid #007bff;
       border-radius: 10px;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-      display: none;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      cursor: move;
     }
-    .slide.active {
-      display: block;
+    .slide input, .slide textarea {
+      width: 100%;
+      margin-top: 5px;
+      font-size: 12px;
     }
-    .nav-btns {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+    .slide-links {
+      margin-top: 5px;
+    }
+    .slide-links input {
+      width: calc(100% - 25px);
     }
     .btn {
-      padding: 10px 20px;
-      margin: 0 10px;
-      font-size: 16px;
+      padding: 5px 10px;
+      margin-right: 10px;
       background: #007bff;
       color: white;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
+      border-radius: 3px;
+    }
+    .btn.danger {
+      background: #dc3545;
     }
   </style>
 </head>
 <body>
-  <input type="file" id="fileInput" accept="application/json" />
-  <div id="viewer"></div>
-  <div class="nav-btns">
-    <button class="btn" onclick="prevSlide()">Previous</button>
-    <button class="btn" onclick="nextSlide()">Next</button>
+  <div id="toolbar">
+    <button class="btn" onclick="addSlide()">Add Slide</button>
+    <button class="btn" onclick="saveSlides()">Save JSON</button>
+    <input type="file" id="fileInput" />
+    <a id="downloadLink" style="display:none"></a>
   </div>
+  <div id="canvas"></div>
 
   <script>
     let slides = [];
-    let currentSlideIndex = 0;
+    let dragging = null;
+    let offsetX, offsetY;
+
+    const canvas = document.getElementById("canvas");
 
     function renderSlides() {
-      const viewer = document.getElementById("viewer");
-      viewer.innerHTML = "";
-      slides.forEach((slide, index) => {
+      canvas.innerHTML = '';
+      slides.forEach(slide => {
         const div = document.createElement("div");
         div.className = "slide";
-        if (index === currentSlideIndex) div.classList.add("active");
         div.style.left = slide.position.x + "px";
         div.style.top = slide.position.y + "px";
+        div.setAttribute("data-id", slide.id);
 
-        const title = document.createElement("h3");
-        title.textContent = slide.title;
-        div.appendChild(title);
+        div.onmousedown = (e) => {
+          dragging = div;
+          offsetX = e.offsetX;
+          offsetY = e.offsetY;
+          canvas.style.cursor = "grabbing";
+        };
 
-        const content = document.createElement("p");
-        content.textContent = slide.content;
-        div.appendChild(content);
+        const titleInput = document.createElement("input");
+        titleInput.value = slide.title;
+        titleInput.oninput = (e) => slide.title = e.target.value;
+        div.appendChild(titleInput);
 
-        if (slide.links_to.length > 0) {
-          slide.links_to.forEach(linkId => {
-            const btn = document.createElement("button");
-            btn.textContent = `Go to ${linkId}`;
-            btn.className = "btn";
-            btn.onclick = () => {
-              const index = slides.findIndex(s => s.id === linkId);
-              if (index >= 0) {
-                currentSlideIndex = index;
-                renderSlides();
-              }
-            };
-            div.appendChild(btn);
-          });
-        }
+        const contentInput = document.createElement("textarea");
+        contentInput.value = slide.content;
+        contentInput.rows = 3;
+        contentInput.oninput = (e) => slide.content = e.target.value;
+        div.appendChild(contentInput);
 
-        viewer.appendChild(div);
+        const linksInput = document.createElement("input");
+        linksInput.value = slide.links_to.join(",");
+        linksInput.placeholder = "Links to slide ids (comma separated)";
+        linksInput.oninput = (e) => slide.links_to = e.target.value.split(",").map(s => s.trim()).filter(s => s);
+        linksInput.className = "slide-links";
+        div.appendChild(linksInput);
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.className = "btn danger";
+        delBtn.style.marginTop = "5px";
+        delBtn.onclick = () => {
+          slides = slides.filter(s => s.id !== slide.id);
+          renderSlides();
+        };
+        div.appendChild(delBtn);
+
+        canvas.appendChild(div);
       });
     }
 
-    function nextSlide() {
-      if (currentSlideIndex < slides.length - 1) {
-        currentSlideIndex++;
-        renderSlides();
+    canvas.onmousemove = (e) => {
+      if (dragging) {
+        const id = dragging.getAttribute("data-id");
+        const slide = slides.find(s => s.id === id);
+        const newX = e.clientX - offsetX;
+        const newY = e.clientY - offsetY;
+        dragging.style.left = newX + "px";
+        dragging.style.top = newY + "px";
+        slide.position.x = newX;
+        slide.position.y = newY;
       }
+    };
+
+    canvas.onmouseup = () => {
+      dragging = null;
+      canvas.style.cursor = "grab";
+    };
+
+    function addSlide() {
+      const newId = "slide" + (slides.length + 1);
+      slides.push({
+        id: newId,
+        title: "New Slide",
+        content: "",
+        position: { x: 100, y: 100 },
+        links_to: []
+      });
+      renderSlides();
     }
 
-    function prevSlide() {
-      if (currentSlideIndex > 0) {
-        currentSlideIndex--;
-        renderSlides();
-      }
+    function saveSlides() {
+      const json = JSON.stringify({ home_slide: slides[0]?.id || "", slides }, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const link = document.getElementById("downloadLink");
+      link.href = URL.createObjectURL(blob);
+      link.download = "presentation.json";
+      link.click();
     }
 
     document.getElementById("fileInput").addEventListener("change", (e) => {
@@ -121,11 +169,13 @@
       reader.onload = (event) => {
         const data = JSON.parse(event.target.result);
         slides = data.slides || [];
-        currentSlideIndex = slides.findIndex(s => s.id === data.home_slide) || 0;
         renderSlides();
       };
       reader.readAsText(file);
     });
+
+    slides = [];
+    renderSlides();
   </script>
 </body>
 </html>
