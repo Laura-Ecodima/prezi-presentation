@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,21 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Prezi-style Interactive Presentation</title>
   <style>
-    body, html {{
+    body, html {
       margin: 0;
       padding: 0;
       overflow: hidden;
       font-family: Arial, sans-serif;
-    }}
-    #canvas {{
+    }
+    #canvas {
       position: relative;
       width: 100vw;
       height: 100vh;
       background-color: #f0f0f0;
       transform-origin: 0 0;
       transition: transform 0.5s ease;
-    }}
-    .slide {{
+    }
+    .slide {
       position: absolute;
       width: 300px;
       height: 200px;
@@ -29,18 +28,18 @@
       border: 2px solid #ccc;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }}
-    .slide h2 {{
+    }
+    .slide h2 {
       margin-top: 0;
-    }}
-    .link {{
+    }
+    .link {
       color: blue;
       cursor: pointer;
       text-decoration: underline;
       display: block;
       margin-top: 10px;
-    }}
-    #homeBtn {{
+    }
+    #homeBtn {
       position: fixed;
       top: 10px;
       left: 10px;
@@ -51,7 +50,7 @@
       border-radius: 5px;
       cursor: pointer;
       z-index: 999;
-    }}
+    }
   </style>
 </head>
 <body>
@@ -62,14 +61,16 @@
     let zoom = 1;
     let offsetX = 0;
     let offsetY = 0;
+    let presentationData = null;
 
-    async function loadPresentation() {{
+    async function loadPresentation() {
       const response = await fetch('prezi_presentation_prototype.json');
       const data = await response.json();
+      presentationData = data;
       const canvas = document.getElementById('canvas');
       canvas.innerHTML = '';
-      
-      data.slides.forEach(slide => {{
+
+      data.slides.forEach(slide => {
         const div = document.createElement('div');
         div.className = 'slide';
         div.style.left = slide.position.x + 'px';
@@ -84,22 +85,22 @@
         content.textContent = slide.content;
         div.appendChild(content);
 
-        slide.links_to.forEach(targetId => {{
+        slide.links_to.forEach(targetId => {
           const link = document.createElement('span');
           link.className = 'link';
           link.textContent = 'Go to ' + targetId;
-          link.onclick = () => zoomToSlide(targetId, data);
+          link.onclick = () => zoomToSlide(targetId);
           div.appendChild(link);
-        }});
+        });
 
         canvas.appendChild(div);
-      }});
+      });
 
-      zoomToSlide(data.home_slide, data);
-    }}
+      zoomToSlide(data.home_slide);
+    }
 
-    function zoomToSlide(slideId, data) {{
-      const slide = data.slides.find(s => s.id === slideId);
+    function zoomToSlide(slideId) {
+      const slide = presentationData.slides.find(s => s.id === slideId);
       const canvas = document.getElementById('canvas');
       const centerX = window.innerWidth / 2 - 150; // slide width/2
       const centerY = window.innerHeight / 2 - 100; // slide height/2
@@ -109,10 +110,9 @@
       zoom = 1.5;
 
       canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
-    }}
+    }
 
     document.getElementById('homeBtn').onclick = () => loadPresentation();
-
     window.onload = loadPresentation;
   </script>
 </body>
