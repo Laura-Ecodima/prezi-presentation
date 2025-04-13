@@ -1,119 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Prezi-style Interactive Presentation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prezi Viewer</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
     }
-    #canvas {
+    #viewer {
       position: relative;
       width: 100vw;
       height: 100vh;
       background-color: #f0f0f0;
-      transform-origin: 0 0;
-      transition: transform 0.5s ease;
     }
     .slide {
       position: absolute;
       width: 300px;
       height: 200px;
-      padding: 20px;
+      padding: 10px;
       background: white;
-      border: 2px solid #ccc;
+      border: 2px solid #007bff;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      display: none;
     }
-    .slide h2 {
-      margin-top: 0;
-    }
-    .link {
-      color: blue;
-      cursor: pointer;
-      text-decoration: underline;
+    .slide.active {
       display: block;
-      margin-top: 10px;
     }
-    #homeBtn {
+    .nav-btns {
       position: fixed;
-      top: 10px;
-      left: 10px;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .btn {
       padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 16px;
       background: #007bff;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      z-index: 999;
     }
   </style>
 </head>
 <body>
-  <button id="homeBtn">Home</button>
-  <div id="canvas"></div>
+  <input type="file" id="fileInput" accept="application/json" />
+  <div id="viewer"></div>
+  <div class="nav-btns">
+    <button class="btn" onclick="prevSlide()">Previous</button>
+    <button class="btn" onclick="nextSlide()">Next</button>
+  </div>
 
   <script>
-    let zoom = 1;
-    let offsetX = 0;
-    let offsetY = 0;
-    let presentationData = null;
+    let slides = [];
+    let currentSlideIndex = 0;
 
-    async function loadPresentation() {
-      const response = await fetch('prezi_presentation_prototype.json');
-      const data = await response.json();
-      presentationData = data;
-      const canvas = document.getElementById('canvas');
-      canvas.innerHTML = '';
+    function renderSlides() {
+      const viewer = document.getElementById("viewer");
+      viewer.innerHTML = "";
+      slides.forEach((slide, index) => {
+        const div = document.createElement("div");
+        div.className = "slide";
+        if (index === currentSlideIndex) div.classList.add("active");
+        div.style.left = slide.position.x + "px";
+        div.style.top = slide.position.y + "px";
 
-      data.slides.forEach(slide => {
-        const div = document.createElement('div');
-        div.className = 'slide';
-        div.style.left = slide.position.x + 'px';
-        div.style.top = slide.position.y + 'px';
-        div.id = slide.id;
-
-        const title = document.createElement('h2');
+        const title = document.createElement("h3");
         title.textContent = slide.title;
         div.appendChild(title);
 
-        const content = document.createElement('p');
+        const content = document.createElement("p");
         content.textContent = slide.content;
         div.appendChild(content);
 
-        slide.links_to.forEach(targetId => {
-          const link = document.createElement('span');
-          link.className = 'link';
-          link.textContent = 'Go to ' + targetId;
-          link.onclick = () => zoomToSlide(targetId);
-          div.appendChild(link);
-        });
+        if (slide.links_to.length > 0) {
+          slide.links_to.forEach(linkId => {
+            const btn = document.createElement("button");
+            btn.textContent = `Go to ${linkId}`;
+            btn.className = "btn";
+            btn.onclick = () => {
+              const index = slides.findIndex(s => s.id === linkId);
+              if (index >= 0) {
+                currentSlideIndex = index;
+                renderSlides();
+              }
+            };
+            div.appendChild(btn);
+          });
+        }
 
-        canvas.appendChild(div);
+        viewer.appendChild(div);
       });
-
-      zoomToSlide(data.home_slide);
     }
 
-    function zoomToSlide(slideId) {
-      const slide = presentationData.slides.find(s => s.id === slideId);
-      const canvas = document.getElementById('canvas');
-      const centerX = window.innerWidth / 2 - 150; // slide width/2
-      const centerY = window.innerHeight / 2 - 100; // slide height/2
-
-      offsetX = centerX - slide.position.x;
-      offsetY = centerY - slide.position.y;
-      zoom = 1.5;
-
-      canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
+    function nextSlide() {
+      if (currentSlideIndex < slides.length - 1) {
+        currentSlideIndex++;
+        renderSlides();
+      }
     }
 
-    document.getElementById('homeBtn').onclick = () => loadPresentation();
-    window.onload = loadPresentation;
+    function prevSlide() {
+      if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        renderSlides();
+      }
+    }
+
+    document.getElementById("fileInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const data = JSON.parse(event.target.result);
+        slides = data.slides || [];
+        currentSlideIndex = slides.findIndex(s => s.id === data.home_slide) || 0;
+        renderSlides();
+      };
+      reader.readAsText(file);
+    });
   </script>
 </body>
 </html>
