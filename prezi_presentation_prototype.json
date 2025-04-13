@@ -1,0 +1,269 @@
+{
+  "home_slide": "slide1",
+  "slides": [
+    {
+      "id": "slide1",
+      "title": "Slide 1",
+      "content": "This is the content for Slide 1.",
+      "position": {
+        "x": 821,
+        "y": -1647
+      },
+      "links_to": [
+        "slide20"
+      ]
+    },
+    {
+      "id": "slide2",
+      "title": "Slide 2",
+      "content": "This is the content for Slide 2.",
+      "position": {
+        "x": -1477,
+        "y": -216
+      },
+      "links_to": [
+        "slide16",
+        "slide20",
+        "slide14"
+      ]
+    },
+    {
+      "id": "slide3",
+      "title": "Slide 3",
+      "content": "This is the content for Slide 3.",
+      "position": {
+        "x": -988,
+        "y": -210
+      },
+      "links_to": [
+        "slide11",
+        "slide6",
+        "slide7"
+      ]
+    },
+    {
+      "id": "slide4",
+      "title": "Slide 4",
+      "content": "This is the content for Slide 4.",
+      "position": {
+        "x": -1132,
+        "y": -6
+      },
+      "links_to": [
+        "slide19",
+        "slide20"
+      ]
+    },
+    {
+      "id": "slide5",
+      "title": "Slide 5",
+      "content": "This is the content for Slide 5.",
+      "position": {
+        "x": 1242,
+        "y": -1401
+      },
+      "links_to": [
+        "slide18",
+        "slide14",
+        "slide20"
+      ]
+    },
+    {
+      "id": "slide6",
+      "title": "Slide 6",
+      "content": "This is the content for Slide 6.",
+      "position": {
+        "x": 633,
+        "y": 1610
+      },
+      "links_to": [
+        "slide10",
+        "slide7",
+        "slide4",
+        "slide3"
+      ]
+    },
+    {
+      "id": "slide7",
+      "title": "Slide 7",
+      "content": "This is the content for Slide 7.",
+      "position": {
+        "x": 1446,
+        "y": -1801
+      },
+      "links_to": [
+        "slide17",
+        "slide3",
+        "slide10"
+      ]
+    },
+    {
+      "id": "slide8",
+      "title": "Slide 8",
+      "content": "This is the content for Slide 8.",
+      "position": {
+        "x": 255,
+        "y": -1750
+      },
+      "links_to": [
+        "slide18",
+        "slide5"
+      ]
+    },
+    {
+      "id": "slide9",
+      "title": "Slide 9",
+      "content": "This is the content for Slide 9.",
+      "position": {
+        "x": -1084,
+        "y": -1483
+      },
+      "links_to": [
+        "slide11",
+        "slide17"
+      ]
+    },
+    {
+      "id": "slide10",
+      "title": "Slide 10",
+      "content": "This is the content for Slide 10.",
+      "position": {
+        "x": 1840,
+        "y": 952
+      },
+      "links_to": [
+        "slide19",
+        "slide2"
+      ]
+    },
+    {
+      "id": "slide11",
+      "title": "Slide 11",
+      "content": "This is the content for Slide 11.",
+      "position": {
+        "x": -381,
+        "y": -958
+      },
+      "links_to": [
+        "slide5",
+        "slide18",
+        "slide4",
+        "slide16"
+      ]
+    },
+    {
+      "id": "slide12",
+      "title": "Slide 12",
+      "content": "This is the content for Slide 12.",
+      "position": {
+        "x": 742,
+        "y": -1654
+      },
+      "links_to": [
+        "slide6"
+      ]
+    },
+    {
+      "id": "slide13",
+      "title": "Slide 13",
+      "content": "This is the content for Slide 13.",
+      "position": {
+        "x": -578,
+        "y": -525
+      },
+      "links_to": [
+        "slide17"
+      ]
+    },
+    {
+      "id": "slide14",
+      "title": "Slide 14",
+      "content": "This is the content for Slide 14.",
+      "position": {
+        "x": -954,
+        "y": -413
+      },
+      "links_to": [
+        "slide12"
+      ]
+    },
+    {
+      "id": "slide15",
+      "title": "Slide 15",
+      "content": "This is the content for Slide 15.",
+      "position": {
+        "x": -1089,
+        "y": 1699
+      },
+      "links_to": [
+        "slide18",
+        "slide7",
+        "slide6",
+        "slide17"
+      ]
+    },
+    {
+      "id": "slide16",
+      "title": "Slide 16",
+      "content": "This is the content for Slide 16.",
+      "position": {
+        "x": 391,
+        "y": -494
+      },
+      "links_to": [
+        "slide2"
+      ]
+    },
+    {
+      "id": "slide17",
+      "title": "Slide 17",
+      "content": "This is the content for Slide 17.",
+      "position": {
+        "x": -1704,
+        "y": 511
+      },
+      "links_to": [
+        "slide11"
+      ]
+    },
+    {
+      "id": "slide18",
+      "title": "Slide 18",
+      "content": "This is the content for Slide 18.",
+      "position": {
+        "x": -283,
+        "y": -1216
+      },
+      "links_to": [
+        "slide12"
+      ]
+    },
+    {
+      "id": "slide19",
+      "title": "Slide 19",
+      "content": "This is the content for Slide 19.",
+      "position": {
+        "x": -1359,
+        "y": 1124
+      },
+      "links_to": [
+        "slide9",
+        "slide6",
+        "slide14",
+        "slide15"
+      ]
+    },
+    {
+      "id": "slide20",
+      "title": "Slide 20",
+      "content": "This is the content for Slide 20.",
+      "position": {
+        "x": -760,
+        "y": -727
+      },
+      "links_to": [
+        "slide5"
+      ]
+    }
+  ]
+}
